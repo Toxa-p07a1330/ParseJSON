@@ -4,22 +4,29 @@ import java.util.*;
 public class Worker
 {
     public static void main(String[] args) {
-        AlphaTester.fullStorage();
-        for (String string : Storage.strings)
-        {
-            Message msg = new Message(string);
-        }
-        System.out.println("\n\n\nБеседа: "+Storage.name+"\n\nAll Messages");
-        for (String str : Storage.countOfMessages.keySet())
-        {
-            System.out.println(str+"\t\t"+ Storage.countOfMessages.get(str));
-        }
-        System.out.println("\n\nCommercial Messages");
-        for (String str : Storage.countOfCommercialMessages.keySet())
-        {
-            System.out.println(str+"\t\t"+ Storage.countOfCommercialMessages.get(str));
-        }
+        String way = new String();
 
+        File workDirectory = new File ("C:\\Users\\User\\Desktop\\SandBox\\Dialogs");
+        for (File file : workDirectory.listFiles())
+        {
+            if (file.getAbsolutePath().indexOf(".json")>0) {
+                System.out.println(file.getAbsolutePath());
+                way = file.getAbsolutePath();
+
+                AlphaTester.fullStorage(way);
+                for (String string : Storage.strings) {
+                    Message msg = new Message(string);
+                }
+                System.out.println("\n\n\nБеседа: " + Storage.name + "\n\nAll Messages");
+                for (String str : Storage.countOfMessages.keySet()) {
+                    System.out.println(str + "\t\t" + Storage.countOfMessages.get(str));
+                }
+                System.out.println("\n\nCommercial Messages");
+                for (String str : Storage.countOfCommercialMessages.keySet()) {
+                    System.out.println(str + "\t\t" + Storage.countOfCommercialMessages.get(str));
+                }
+            }
+        }
     }
 }
 
@@ -33,7 +40,7 @@ class Message
     int senderID;
     String dateStr;
 
-    String wayToDict = "C:\\Users\\User\\Desktop\\SandBox\\ParseJSON\\dict.txt";
+    String wayToDict = "C:\\Users\\User\\Desktop\\SandBox\\dict.txt";        //путь к словарю. Каждое слово с новой строки
     Message(String inputStr)
     {
         String tmp;
@@ -43,10 +50,11 @@ class Message
         tmp = inputStr.substring(inputStr.indexOf("\"t\":\"")+5, inputStr.indexOf("\"d\":")-2);
         text = tmp;
         tmp = inputStr.substring( inputStr.indexOf("\"d\":")+4);
+        try {
         int UNIXTime = Integer.parseInt(tmp)+diffUnixVKTime;
         date =new Date((long)UNIXTime*1000);
-        try {
-            Scanner readDict = new Scanner(new File("C:\\Users\\User\\Desktop\\SandBox\\dict.txt"));
+
+            Scanner readDict = new Scanner(new File(wayToDict));
             String word = new String();
             while (readDict.hasNextLine())
             {
@@ -82,14 +90,13 @@ class Message
 
 class AlphaTester
 {
-    public static void fullStorage() {
+    public static void fullStorage( String path) {
         ArrayList<String> strings = new ArrayList<>();
-        String path = "C:\\Users\\User\\Downloads\\dialog-35.json";
         String readen = new String();
         try {
             Scanner scanner = new Scanner(new File(path));
             readen = scanner.nextLine();
-            Storage.name = readen.split("\"")[15];
+            Storage.name = readen.split("\"")[13];
             String withoutQuote = new String();
             for (String str : readen.split("},"))
             {
