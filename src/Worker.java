@@ -6,7 +6,7 @@ public class Worker
     public static void main(String[] args) {
         String way = new String();
 
-        File workDirectory = new File ("C:\\Users\\User\\Desktop\\SandBox\\Dialogs");
+        File workDirectory = new File ("C:\\Users\\User\\Downloads");
         for (File file : workDirectory.listFiles())
         {
             if (file.getAbsolutePath().indexOf(".json")>0) {
@@ -74,7 +74,7 @@ class Message
             System.out.println(e.getMessage());
         }
 
-        dateStr = date.getDate()+"."+date.getMonth()+"."+(date.getYear()+1900);
+        dateStr = date.getDate()+"."+(date.getMonth()+1)+"."+(date.getYear()+1900);
         System.out.println( "{At: "+ dateStr+"; By: "+senderID + "; " +
                 text + ";  isCommercial = "+isCommercial+"; keyword = "+keyWord+"}");
         if (Storage.countOfMessages.containsKey(dateStr))
