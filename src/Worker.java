@@ -9,26 +9,44 @@ import java.util.Scanner;
 public class Worker
 {
     public static void main(String[] args) {
+        AlphaTester.fullStorage();
+        for (String string : Storage.strings)
+        {
+            Message msg = new Message(string);
+        }
 
     }
 }
 
 class Message
 {
-    Date date;
+    Date date = new Date();
+    final int diffUnixVKTime = 1138665602;
     String text;
     boolean isCommercial;
     String keyWord = "NULL";
+    int senderID;
 
+    final String wayToDict = "C:\\Users\\User\\Desktop\\SandBox\\ParseJSON\\dict.txt";
     Message(String inputStr)
     {
+        String tmp;
+        tmp = inputStr.substring(4, inputStr.indexOf('\t'));
+        senderID = Integer.parseInt(tmp);
 
+        tmp = inputStr.substring(inputStr.indexOf("\"t\":\"")+5, inputStr.indexOf("\"d\":")-2);
+        text = tmp;
+        tmp = inputStr.substring( inputStr.indexOf("\"d\":")+4);
+        int UNIXTime = Integer.parseInt(tmp)+diffUnixVKTime;
+        date =new Date((long)UNIXTime*1000);
+        Scanner readDict = new Scanner(new File())
+        System.out.println( "At: "+ date.getDate()+"."+date.getMonth()+"."+(date.getYear()+1900)+"; By: "+senderID + "; " + text );
     }
 }
 
 class AlphaTester
 {
-    public static void main(String[] args) {
+    public static void fullStorage() {
         ArrayList<String> strings = new ArrayList<>();
         String path = "C:\\Users\\User\\Downloads\\dialog-35.json";
         String readen = new String();
@@ -43,15 +61,15 @@ class AlphaTester
                 {
                     if (str2.indexOf("\"a\"")==-1 && str2.indexOf("\"n\"")==-1 && str2.indexOf("\"m\"")==-1 && str2.indexOf("\"o\"")==-1 && str2.indexOf("\"s\"")==-1
                             && str2.indexOf("\"z\"")==-1 && str2.indexOf("\"w\"")==-1 && str2.indexOf("\"q\"")==-1 &&
-                            str2.indexOf("\"i\"")==-1 && str2.indexOf("\"t\":\"\"") == -1)
+                            str2.indexOf("\"i\"")==-1 && str2.indexOf("\"t\":\"\"") == -1 && str2.indexOf("\"e\"")==-1)
                         withoutQuote+=str2+"\t";
                 }
                 withoutQuote = withoutQuote.replace('{', ' ').replace('}', ' ').replace(']', ' ').trim();
 
                 if (withoutQuote.charAt(1)=='f' && withoutQuote.indexOf("\"d\":")==withoutQuote.lastIndexOf("\"d\":") && withoutQuote.indexOf("\"t\"")!=-1
-                && withoutQuote.indexOf("\"t\"") < withoutQuote.indexOf("\"d\""))
+                && withoutQuote.indexOf("\"t\"") < withoutQuote.indexOf("\"d\"") && withoutQuote.indexOf("\"t\":")==withoutQuote.lastIndexOf("\"t\":"))
                 {
-                    System.out.println(withoutQuote);
+                    //System.out.println(withoutQuote);
                     strings.add(withoutQuote);
                 }
                 withoutQuote="";
