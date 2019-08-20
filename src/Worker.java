@@ -26,6 +26,8 @@ public class Worker
                     System.out.println(str + "\t\t" + Storage.countOfCommercialMessages.get(str));
                 }
             }
+            Storage.countOfCommercialMessages.clear();
+            Storage.countOfMessages.clear();
         }
     }
 }
