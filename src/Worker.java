@@ -27,7 +27,7 @@ class Message
     String keyWord = "NULL";
     int senderID;
 
-    final String wayToDict = "C:\\Users\\User\\Desktop\\SandBox\\ParseJSON\\dict.txt";
+    String wayToDict = "C:\\Users\\User\\Desktop\\SandBox\\ParseJSON\\dict.txt";
     Message(String inputStr)
     {
         String tmp;
@@ -39,8 +39,24 @@ class Message
         tmp = inputStr.substring( inputStr.indexOf("\"d\":")+4);
         int UNIXTime = Integer.parseInt(tmp)+diffUnixVKTime;
         date =new Date((long)UNIXTime*1000);
-        Scanner readDict = new Scanner(new File())
-        System.out.println( "At: "+ date.getDate()+"."+date.getMonth()+"."+(date.getYear()+1900)+"; By: "+senderID + "; " + text );
+        try {
+            Scanner readDict = new Scanner(new File("C:\\Users\\User\\Desktop\\SandBox\\dict.txt"));
+            String word = new String();
+            while (readDict.hasNextLine())
+            {
+                //System.out.println(1);
+                word=readDict.nextLine();
+                if (text.indexOf(word.trim())!=-1)
+                {
+                    isCommercial=true;
+                    keyWord = word;
+                }
+            }
+        }
+        catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        System.out.println( "At: "+ date.getDate()+"."+date.getMonth()+"."+(date.getYear()+1900)+"; By: "+senderID + "; " + text + "  isCommercial = "+isCommercial);
     }
 }
 
