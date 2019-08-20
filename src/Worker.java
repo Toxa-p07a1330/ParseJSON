@@ -1,10 +1,5 @@
-import javax.xml.crypto.Data;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Scanner;
+import java.util.*;
 
 public class Worker
 {
@@ -13,6 +8,16 @@ public class Worker
         for (String string : Storage.strings)
         {
             Message msg = new Message(string);
+        }
+        System.out.println("\n\n\nБеседа: "+Storage.name+"\n\nAll Messages");
+        for (String str : Storage.countOfMessages.keySet())
+        {
+            System.out.println(str+"\t\t"+ Storage.countOfMessages.get(str));
+        }
+        System.out.println("\n\nCommercial Messages");
+        for (String str : Storage.countOfCommercialMessages.keySet())
+        {
+            System.out.println(str+"\t\t"+ Storage.countOfCommercialMessages.get(str));
         }
 
     }
@@ -26,6 +31,7 @@ class Message
     boolean isCommercial;
     String keyWord = "NULL";
     int senderID;
+    String dateStr;
 
     String wayToDict = "C:\\Users\\User\\Desktop\\SandBox\\ParseJSON\\dict.txt";
     Message(String inputStr)
@@ -44,7 +50,7 @@ class Message
             String word = new String();
             while (readDict.hasNextLine())
             {
-                //System.out.println(1);
+               // System.out.println(1);
                 word=readDict.nextLine();
                 if (text.indexOf(word.trim())!=-1)
                 {
@@ -52,11 +58,25 @@ class Message
                     keyWord = word;
                 }
             }
+            readDict.close();
         }
         catch (Exception e) {
             System.out.println(e.getMessage());
         }
-        System.out.println( "At: "+ date.getDate()+"."+date.getMonth()+"."+(date.getYear()+1900)+"; By: "+senderID + "; " + text + "  isCommercial = "+isCommercial);
+
+        dateStr = date.getDate()+"."+date.getMonth()+"."+(date.getYear()+1900);
+        System.out.println( "{At: "+ dateStr+"; By: "+senderID + "; " +
+                text + ";  isCommercial = "+isCommercial+"; keyword = "+keyWord+"}");
+        if (Storage.countOfMessages.containsKey(dateStr))
+            Storage.countOfMessages.put(dateStr, Storage.countOfMessages.get(dateStr)+1);
+        else
+            Storage.countOfMessages.put(dateStr, 1);
+        if (isCommercial){
+            if (Storage.countOfCommercialMessages.containsKey(dateStr))
+                Storage.countOfCommercialMessages.put(dateStr, Storage.countOfCommercialMessages.get(dateStr)+1);
+            else
+                Storage.countOfCommercialMessages.put(dateStr, 1);
+        }
     }
 }
 
@@ -69,6 +89,7 @@ class AlphaTester
         try {
             Scanner scanner = new Scanner(new File(path));
             readen = scanner.nextLine();
+            Storage.name = readen.split("\"")[15];
             String withoutQuote = new String();
             for (String str : readen.split("},"))
             {
@@ -103,4 +124,8 @@ class AlphaTester
 class Storage
 {
     public static ArrayList<String> strings;
+    public static String name;
+    public static Map <String, Integer> countOfMessages = new HashMap<>();
+    public static Map <String, Integer> countOfCommercialMessages = new HashMap<>();
+
 }
