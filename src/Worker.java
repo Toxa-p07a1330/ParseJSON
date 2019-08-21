@@ -22,6 +22,7 @@ public class Worker
         }
         String way = new String();
         boolean needAll = false;            //если нужна обобщенная статистика по всем файлам в папке - выставить в true
+        boolean showStat = true;             //отображение статистики
 
         File workDirectory = new File ("C:\\Users\\User\\Desktop\\SandBox\\Dialogs");
         for (File file : workDirectory.listFiles())
@@ -34,6 +35,7 @@ public class Worker
                 for (String string : Storage.strings) {
                     Message msg = new Message(string);
                 }
+                if (showStat){
                 System.out.println("\n\n\nБеседа: " + Storage.name + "\n\nAll Messages\n");
                 for (String str : Storage.countOfMessages.keySet()) {
                     System.out.println(str + "\t\t" + Storage.countOfMessages.get(str));
@@ -42,6 +44,7 @@ public class Worker
                 for (String str : Storage.countOfCommercialMessages.keySet()) {
                     System.out.println(str + "\t\t" + Storage.countOfCommercialMessages.get(str));
                 }
+                    }
             }
             if (!needAll)
             {
@@ -98,15 +101,16 @@ class Message
         //if (isCommercial)                                                          //если нужны только коммерческие сообщения - раскомментить
         //  System.out.println( "{At: "+ dateStr+"; By: "+senderID + "; " +          //если нужна только статистика - закомментить
         //            text + ";  isCommercial = "+isCommercial+"; keyword = "+keyWord+"}");
-        if (Storage.countOfMessages.containsKey(dateStr))
-            Storage.countOfMessages.put(dateStr, Storage.countOfMessages.get(dateStr)+1);
+        String key = dateStr;
+        if (Storage.countOfMessages.containsKey(key))
+            Storage.countOfMessages.put(dateStr, Storage.countOfMessages.get(key)+1);
         else
-            Storage.countOfMessages.put(dateStr, 1);
+            Storage.countOfMessages.put(key, 1);
         if (isCommercial){
-            if (Storage.countOfCommercialMessages.containsKey(dateStr))
-                Storage.countOfCommercialMessages.put(dateStr, Storage.countOfCommercialMessages.get(dateStr)+1);
+            if (Storage.countOfCommercialMessages.containsKey(key))
+                Storage.countOfCommercialMessages.put(key, Storage.countOfCommercialMessages.get(key)+1);
             else
-                Storage.countOfCommercialMessages.put(dateStr, 1);
+                Storage.countOfCommercialMessages.put(key, 1);
         }
     }
 }
