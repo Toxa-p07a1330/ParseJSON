@@ -1,12 +1,29 @@
 import java.io.File;
 import java.util.*;
+import java.io.*;
 
 public class Worker
 {
     public static void main(String[] args) {
-        String way = new String();
+        boolean writeToFile=true;              //для вывода в файл выставить true
 
-        File workDirectory = new File ("C:\\Users\\User\\Downloads");
+        try {
+
+            if (writeToFile){
+                PrintStream out = new PrintStream(new FileOutputStream("out.log"));     //путь к файлу данных
+                PrintStream err = new PrintStream(new FileOutputStream("err.log"));     //путь к логу ошибок
+                System.setOut(out);
+                System.setErr(err);
+            }
+        }
+        catch (Exception e)
+        {
+            System.out.println(e.getMessage());
+        }
+        String way = new String();
+        boolean needAll = false;            //если нужна обобщенная статистика по всем файлам в папке - выставить в true
+
+        File workDirectory = new File ("C:\\Users\\User\\Desktop\\SandBox\\Dialogs");
         for (File file : workDirectory.listFiles())
         {
             if (file.getAbsolutePath().indexOf(".json")>0) {
@@ -17,7 +34,7 @@ public class Worker
                 for (String string : Storage.strings) {
                     Message msg = new Message(string);
                 }
-                System.out.println("\n\n\nБеседа: " + Storage.name + "\n\nAll Messages");
+                System.out.println("\n\n\nБеседа: " + Storage.name + "\n\nAll Messages\n");
                 for (String str : Storage.countOfMessages.keySet()) {
                     System.out.println(str + "\t\t" + Storage.countOfMessages.get(str));
                 }
@@ -26,8 +43,11 @@ public class Worker
                     System.out.println(str + "\t\t" + Storage.countOfCommercialMessages.get(str));
                 }
             }
-            Storage.countOfCommercialMessages.clear();
-            Storage.countOfMessages.clear();
+            if (!needAll)
+            {
+                Storage.countOfCommercialMessages.clear();
+                Storage.countOfMessages.clear();
+            }
         }
     }
 }
@@ -53,14 +73,14 @@ class Message
         text = tmp;
         tmp = inputStr.substring( inputStr.indexOf("\"d\":")+4);
         try {
-        int UNIXTime = Integer.parseInt(tmp)+diffUnixVKTime;
-        date =new Date((long)UNIXTime*1000);
+            int UNIXTime = Integer.parseInt(tmp)+diffUnixVKTime;
+            date =new Date((long)UNIXTime*1000);
 
             Scanner readDict = new Scanner(new File(wayToDict));
             String word = new String();
             while (readDict.hasNextLine())
             {
-               // System.out.println(1);
+                // System.out.println(1);
                 word=readDict.nextLine();
                 if (text.indexOf(word.trim())!=-1)
                 {
@@ -75,8 +95,9 @@ class Message
         }
 
         dateStr = date.getDate()+"."+(date.getMonth()+1)+"."+(date.getYear()+1900);
-        System.out.println( "{At: "+ dateStr+"; By: "+senderID + "; " +
-                text + ";  isCommercial = "+isCommercial+"; keyword = "+keyWord+"}");
+        //if (isCommercial)                                                          //если нужны только коммерческие сообщения - раскомментить
+        //  System.out.println( "{At: "+ dateStr+"; By: "+senderID + "; " +          //если нужна только статистика - закомментить
+        //            text + ";  isCommercial = "+isCommercial+"; keyword = "+keyWord+"}");
         if (Storage.countOfMessages.containsKey(dateStr))
             Storage.countOfMessages.put(dateStr, Storage.countOfMessages.get(dateStr)+1);
         else
@@ -113,7 +134,7 @@ class AlphaTester
                 withoutQuote = withoutQuote.replace('{', ' ').replace('}', ' ').replace(']', ' ').trim();
 
                 if (withoutQuote.charAt(1)=='f' && withoutQuote.indexOf("\"d\":")==withoutQuote.lastIndexOf("\"d\":") && withoutQuote.indexOf("\"t\"")!=-1
-                && withoutQuote.indexOf("\"t\"") < withoutQuote.indexOf("\"d\"") && withoutQuote.indexOf("\"t\":")==withoutQuote.lastIndexOf("\"t\":"))
+                        && withoutQuote.indexOf("\"t\"") < withoutQuote.indexOf("\"d\"") && withoutQuote.indexOf("\"t\":")==withoutQuote.lastIndexOf("\"t\":"))
                 {
                     //System.out.println(withoutQuote);
                     strings.add(withoutQuote);
