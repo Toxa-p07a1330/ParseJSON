@@ -5,13 +5,21 @@ import java.io.*;
 public class Worker
 {
     public static void main(String[] args) {
-        boolean writeToFile=true;              //для вывода в файл выставить true
+
+
+        boolean writeToFile=true;                                            //для вывода в файл выставить true
+        boolean needAll = false;                                             //если нужна обобщенная статистика по всем файлам в папке - выставить в true
+        boolean showStat = false;                                             //отображение статистики
+        String wayToOut = "out.log";                                         //путь к файлу обработанных данных
+        String wayToErr = "err.log";                                         //путь к файлу логгирования ошибок
+        String workDirPath = "C:\\Users\\User\\Desktop\\SandBox\\Dialogs";   //путь к директории с исхониками
+        String exp = ".json";                                                //требуемое расширение фалйа
 
         try {
 
             if (writeToFile){
-                PrintStream out = new PrintStream(new FileOutputStream("out.log"));     //путь к файлу данных
-                PrintStream err = new PrintStream(new FileOutputStream("err.log"));     //путь к логу ошибок
+                PrintStream out = new PrintStream(new FileOutputStream(wayToOut));
+                PrintStream err = new PrintStream(new FileOutputStream(wayToErr));
                 System.setOut(out);
                 System.setErr(err);
             }
@@ -20,14 +28,14 @@ public class Worker
         {
             System.out.println(e.getMessage());
         }
-        String way = new String();
-        boolean needAll = false;            //если нужна обобщенная статистика по всем файлам в папке - выставить в true
-        boolean showStat = true;             //отображение статистики
+        String way;
 
-        File workDirectory = new File ("C:\\Users\\User\\Desktop\\SandBox\\Dialogs");
+
+
+        File workDirectory = new File (workDirPath);
         for (File file : workDirectory.listFiles())
         {
-            if (file.getAbsolutePath().indexOf(".json")>0) {
+            if (file.getAbsolutePath().indexOf(exp)>0) {
                 System.out.println(file.getAbsolutePath());
                 way = file.getAbsolutePath();
 
@@ -57,15 +65,20 @@ public class Worker
 
 class Message
 {
+
+    String wayToDict = "C:\\Users\\User\\Desktop\\SandBox\\dict.txt";   //путь к словарю. Каждое слово с новой строки
+    boolean needMessages = true;                                       //отображение сообщений
+    boolean needCommercialOnly = true;                                  //не отображать не коммерческие сообщения
+
+
     Date date = new Date();
-    final int diffUnixVKTime = 1138665602;
+    final int diffUnixVKTime = 1138665602;          //не рогать, магическое число
     String text;
     boolean isCommercial;
     String keyWord = "NULL";
     int senderID;
     String dateStr;
 
-    String wayToDict = "C:\\Users\\User\\Desktop\\SandBox\\dict.txt";        //путь к словарю. Каждое слово с новой строки
     Message(String inputStr)
     {
         String tmp;
@@ -98,10 +111,16 @@ class Message
         }
 
         dateStr = date.getDate()+"."+(date.getMonth()+1)+"."+(date.getYear()+1900);
-        //if (isCommercial)                                                          //если нужны только коммерческие сообщения - раскомментить
-        //  System.out.println( "{At: "+ dateStr+"; By: "+senderID + "; " +          //если нужна только статистика - закомментить
-        //            text + ";  isCommercial = "+isCommercial+"; keyword = "+keyWord+"}");
-        String key = Integer.toString(senderID);
+        if (needMessages)
+            if (needCommercialOnly){
+                if (isCommercial)
+                  System.out.println( "{At: "+ dateStr+"; By: "+senderID + "; " +
+                            text + ";  isCommercial = "+isCommercial+"; keyword = "+keyWord+"}");
+            }
+                else
+                    System.out.println( "{At: "+ dateStr+"; By: "+senderID + "; " +
+                            text + ";  isCommercial = "+isCommercial+"; keyword = "+keyWord+"}");
+        String key = dateStr;
         if (Storage.countOfMessages.containsKey(key))
             Storage.countOfMessages.put(key, Storage.countOfMessages.get(key)+1);
         else
