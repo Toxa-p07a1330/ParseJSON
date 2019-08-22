@@ -69,7 +69,7 @@ class Message
     String wayToDict = "C:\\Users\\User\\Desktop\\SandBox\\ParseJSON\\dict.txt";   //путь к словарю. Каждое слово с новой строки
     boolean needMessages = true;                                       //отображение сообщений
     boolean needCommercialOnly = false;                                  //не отображать не коммерческие сообщения
-    int maxCount = 200_000;                                                //количество выводимых мессаг
+    int maxCount = 1_000;                                                //количество выводимых мессаг
 
 
     Date date = new Date();
@@ -118,13 +118,14 @@ class Message
             {
                 if (needCommercialOnly){
                     if (isCommercial)                                                                       //make out format correct here
-                      System.out.println( "{At: "+ dateStr+"; By: "+senderID + "; " +
-                                text + ";  isCommercial = "+isCommercial+"; keyword = "+keyWord+"}");
+                        System.out.println("\""+text.replace("\"", "\"\"") + "\", "+isCommercial);
                 }
-                    else
-                        System.out.println("\""+text+"\"");
-                    Storage.currentMsgNumber++;
+                else
+                    System.out.println("\""+text.replace("\"", "\"\"") + "\", "+isCommercial);
+                Storage.currentMsgNumber++;
             }
+            else
+                System.exit(0);
         String key = dateStr;
         if (Storage.countOfMessages.containsKey(key))
             Storage.countOfMessages.put(key, Storage.countOfMessages.get(key)+1);
