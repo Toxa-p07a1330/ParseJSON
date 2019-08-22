@@ -10,10 +10,11 @@ public class Worker
         boolean writeToFile=true;                                            //для вывода в файл выставить true
         boolean needAll = false;                                             //если нужна обобщенная статистика по всем файлам в папке - выставить в true
         boolean showStat = false;                                             //отображение статистики
-        String wayToOut = "out.log";                                         //путь к файлу обработанных данных
+        String wayToOut = "out.csv";                                         //путь к файлу обработанных данных
         String wayToErr = "err.log";                                         //путь к файлу логгирования ошибок
         String workDirPath = "C:\\Users\\User\\Desktop\\SandBox\\Dialogs";   //путь к директории с исхониками
         String exp = ".json";                                                //требуемое расширение фалйа
+
 
         try {
 
@@ -36,7 +37,6 @@ public class Worker
         for (File file : workDirectory.listFiles())
         {
             if (file.getAbsolutePath().indexOf(exp)>0) {
-                System.out.println(file.getAbsolutePath());
                 way = file.getAbsolutePath();
 
                 AlphaTester.fullStorage(way);
@@ -66,13 +66,14 @@ public class Worker
 class Message
 {
 
-    String wayToDict = "C:\\Users\\User\\Desktop\\SandBox\\dict.txt";   //путь к словарю. Каждое слово с новой строки
+    String wayToDict = "C:\\Users\\User\\Desktop\\SandBox\\ParseJSON\\dict.txt";   //путь к словарю. Каждое слово с новой строки
     boolean needMessages = true;                                       //отображение сообщений
-    boolean needCommercialOnly = true;                                  //не отображать не коммерческие сообщения
+    boolean needCommercialOnly = false;                                  //не отображать не коммерческие сообщения
+    int maxCount = 200_000;                                                //количество выводимых мессаг
 
 
     Date date = new Date();
-    final int diffUnixVKTime = 1138665602;          //не рогать, магическое число
+    final int diffUnixVKTime = 1138665602;          //не трогать, магическое число
     String text;
     boolean isCommercial;
     String keyWord = "NULL";
@@ -111,15 +112,19 @@ class Message
         }
 
         dateStr = date.getDate()+"."+(date.getMonth()+1)+"."+(date.getYear()+1900);
+
         if (needMessages)
-            if (needCommercialOnly){
-                if (isCommercial)
-                  System.out.println( "{At: "+ dateStr+"; By: "+senderID + "; " +
-                            text + ";  isCommercial = "+isCommercial+"; keyword = "+keyWord+"}");
+            if (Storage.currentMsgNumber<maxCount)
+            {
+                if (needCommercialOnly){
+                    if (isCommercial)                                                                       //make out format correct here
+                      System.out.println( "{At: "+ dateStr+"; By: "+senderID + "; " +
+                                text + ";  isCommercial = "+isCommercial+"; keyword = "+keyWord+"}");
+                }
+                    else
+                        System.out.println("\""+text+"\"");
+                    Storage.currentMsgNumber++;
             }
-                else
-                    System.out.println( "{At: "+ dateStr+"; By: "+senderID + "; " +
-                            text + ";  isCommercial = "+isCommercial+"; keyword = "+keyWord+"}");
         String key = dateStr;
         if (Storage.countOfMessages.containsKey(key))
             Storage.countOfMessages.put(key, Storage.countOfMessages.get(key)+1);
@@ -180,5 +185,6 @@ class Storage
     public static String name;
     public static Map <String, Integer> countOfMessages = new HashMap<>();
     public static Map <String, Integer> countOfCommercialMessages = new HashMap<>();
+    public static int currentMsgNumber = 0;
 
 }
